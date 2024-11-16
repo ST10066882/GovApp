@@ -46,9 +46,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Classes\AvlTree.cs" />
     <Compile Include="Classes\Event.cs" />
     <Compile Include="Classes\EventManager.cs" />
+    <Compile Include="Classes\Graph.cs" />
+    <Compile Include="Classes\Node.cs" />
     <Compile Include="Classes\SearchRecord.cs" />
+    <Compile Include="Classes\ServiceRequest.cs" />
     <Compile Include="Events.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -107,6 +111,12 @@
     <Compile Include="UserControls\IssueReporting.Designer.cs">
       <DependentUpon>IssueReporting.cs</DependentUpon>
     </Compile>
+    <Compile Include="UserControls\ServiceLocator.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UserControls\ServiceLocator.Designer.cs">
+      <DependentUpon>ServiceLocator.cs</DependentUpon>
+    </Compile>
     <Compile Include="UserControls\ViewEvents.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -130,6 +140,9 @@
     <EmbeddedResource Include="ReportIssue.resx">
       <DependentUpon>ReportIssue.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="ServiceRequestStatus.resx">
+      <DependentUpon>ServiceRequestStatus.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="ShowIssue.resx">
       <DependentUpon>ShowIssue.cs</DependentUpon>
     </EmbeddedResource>
@@ -138,6 +151,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="UserControls\IssueReporting.resx">
       <DependentUpon>IssueReporting.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UserControls\ServiceLocator.resx">
+      <DependentUpon>ServiceLocator.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UserControls\ViewEvents.resx">
       <DependentUpon>ViewEvents.cs</DependentUpon>

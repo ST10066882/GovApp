@@ -71,7 +71,8 @@ namespace GovApp
                         //MessageBox.Show("Feature comming soon");
                         break;
                     case "Service Request Status":
-                        MessageBox.Show("Feature comming soon");
+                        childForm = new ServiceRequestStatus();
+                        ChildFormSetup();
                         break;
                 }
                  
