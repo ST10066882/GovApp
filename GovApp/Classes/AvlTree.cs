@@ -14,45 +14,21 @@ namespace GovApp.Classes
 
         //---------------------------------------------------------------------------//
         //Safe entry point for the insertion method
-        public void Insert(ServiceRequest request) 
+        public void Insert(Issue request) 
         {
             if (Root == null)
             {
                 Root = new Node(request);
                 return;
             }
-            InsertAVL(Root, request);
+            InsertAVL2(Root, request);
         }
        
         //---------------------------------------------------------------------------//
-        //Main insertion logic for the AVL Tree
-        private Node InsertTraversal(Node node, ServiceRequest request)
-        {
-            if (node == null)
-            {
-                return new Node(request);
-            }
-            if (request.RequestID < node.Data.RequestID)
-            {
-               node.Left = InsertTraversal(node.Left, request);
-            }else if (request.RequestID > node.Data.RequestID)
-            {
-                node.Right = InsertTraversal(node.Right, request);
-            }
-            else
-            {
-                MessageBox.Show("Duplicate RequestId in AVL Tree!");
-            }
-            
-            node.Height = Math.Max(GetHeight(node.Left), GetHeight(node.Right)) + 1;
-            return Balance(node);
-        }
-
-        //---------------------------------------------------------------------------//
         //Safe entry point for the search method
-        public ServiceRequest Search(string searchValue)
+        public Issue Search(string searchValue)
         {
-            ServiceRequest result = SearchTraversal(Root, searchValue);
+            Issue result = SearchTraversal(Root, searchValue);
             if (result == null) 
             {
                 return null;
@@ -65,7 +41,7 @@ namespace GovApp.Classes
 
         //---------------------------------------------------------------------------//
         // Search Logic for the AVL Tree
-        private ServiceRequest SearchTraversal(Node node, string searchValue)
+        private Issue SearchTraversal(Node node, string searchValue)
         {
             // Indicates that the request is not found
             if (node == null)
@@ -73,7 +49,7 @@ namespace GovApp.Classes
                 return null;
             }
             // Compare descriptions lexicographically
-            int comparison = string.Compare(searchValue, node.Data.RequestName, StringComparison.OrdinalIgnoreCase);
+            int comparison = string.Compare(searchValue, node.Data.Location, StringComparison.OrdinalIgnoreCase);
 
             if (comparison < 0)
             {
@@ -178,14 +154,14 @@ namespace GovApp.Classes
         }
 
 
-        private Node InsertAVL(Node node, ServiceRequest request)
+        private Node InsertAVL(Node node, Issue request)
         {
             if (node == null) return new Node(request);
 
             // Compare RequestName lexicographically
-            if (string.Compare(request.RequestName, node.Data.RequestName) < 0)
+            if (string.Compare(request.Location, node.Data.Location) < 0)
                 node.Left = InsertAVL(node.Left, request);
-            else if (string.Compare(request.RequestName, node.Data.RequestName) > 0)
+            else if (string.Compare(request.Location, node.Data.Location) > 0)
                 node.Right = InsertAVL(node.Right, request);
             else
                 return node; // Duplicate names are not allowed
@@ -195,28 +171,113 @@ namespace GovApp.Classes
             int balance = GetBalanceFactor(node);
 
             // Left Heavy
-            if (balance > 1 && string.Compare(request.RequestName, node.Left.Data.RequestName) < 0)
+            if (balance > 1 && string.Compare(request.Location, node.Left.Data.Location) < 0)
                 return RotateRight(node);
 
             // Right Heavy
-            if (balance < -1 && string.Compare(request.RequestName, node.Right.Data.RequestName) > 0)
+            if (balance < -1 && string.Compare(request.Location, node.Right.Data.Location) > 0)
                 return RotateLeft(node);
 
             // Left-Right
-            if (balance > 1 && string.Compare(request.RequestName, node.Left.Data.RequestName) > 0)
+            if (balance > 1 && string.Compare(request.Location, node.Left.Data.Location) > 0)
             {
                 node.Left = RotateLeft(node.Left);
                 return RotateRight(node);
             }
 
             // Right-Left
-            if (balance < -1 && string.Compare(request.RequestName, node.Right.Data.RequestName) < 0)
+            if (balance < -1 && string.Compare(request.Location, node.Right.Data.Location) < 0)
             {
                 node.Right = RotateRight(node.Right);
                 return RotateLeft(node);
             }
 
             return node;
+        }
+
+        private Node InsertAVL2(Node node, Issue request)
+        {
+            // Ensure the request is valid
+            if (request == null || string.IsNullOrEmpty(request.Location))
+                throw new ArgumentException("Issue or Location cannot be null or empty.");
+
+            // Base case: Insert new node
+            if (node == null)
+                return new Node(request);
+
+            // Perform lexicographical comparison (case-insensitive)
+            int comparison = string.Compare(request.Location, node.Data.Location, StringComparison.OrdinalIgnoreCase);
+
+            if (comparison < 0)
+            {
+                // Insert in the left subtree
+                node.Left = InsertAVL2(node.Left, request);
+            }
+            else if (comparison > 0)
+            {
+                // Insert in the right subtree
+                node.Right = InsertAVL2(node.Right, request);
+            }
+            else
+            {
+                // Duplicate location detected
+                Console.WriteLine($"Duplicate location: {request.Location}");
+                return node; // Do nothing for duplicates
+            }
+
+            // Update the height of the current node
+            node.Height = Math.Max(GetHeight(node.Left), GetHeight(node.Right)) + 1;
+
+            // Check balance factor and perform rotations if necessary
+            int balance = GetBalanceFactor(node);
+
+            // Left-Left Case
+            if (balance > 1 && string.Compare(request.Location, node.Left.Data.Location, StringComparison.OrdinalIgnoreCase) < 0)
+            {
+                Console.WriteLine($"Left-Left case at node: {node.Data.Location}");
+                return RotateRight(node);
+            }
+
+            // Right-Right Case
+            if (balance < -1 && string.Compare(request.Location, node.Right.Data.Location, StringComparison.OrdinalIgnoreCase) > 0)
+            {
+                Console.WriteLine($"Right-Right case at node: {node.Data.Location}");
+                return RotateLeft(node);
+            }
+
+            // Left-Right Case
+            if (balance > 1 && string.Compare(request.Location, node.Left.Data.Location, StringComparison.OrdinalIgnoreCase) > 0)
+            {
+                Console.WriteLine($"Left-Right case at node: {node.Data.Location}");
+                node.Left = RotateLeft(node.Left);
+                return RotateRight(node);
+            }
+
+            // Right-Left Case
+            if (balance < -1 && string.Compare(request.Location, node.Right.Data.Location, StringComparison.OrdinalIgnoreCase) < 0)
+            {
+                Console.WriteLine($"Right-Left case at node: {node.Data.Location}");
+                node.Right = RotateRight(node.Right);
+                return RotateLeft(node);
+            }
+
+            return node;
+        }
+
+
+        private void InOrderTraversal(Node node, Action<Issue> visit)
+        {
+            if (node == null) return;
+
+            InOrderTraversal(node.Left, visit);
+            visit(node.Data); // Add the current node's data
+            InOrderTraversal(node.Right, visit);
+        }
+        public HashSet<string> GetAllLocationsAsHashSet()
+        {
+            HashSet<string> issues = new HashSet<string>();
+            InOrderTraversal(Root, location => issues.Add(location.Location));
+            return issues;
         }
 
 

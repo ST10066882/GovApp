@@ -196,6 +196,10 @@ namespace GovApp.UserControls
                 //MessageBox.Show("Select a valid category", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 ProgressStatusLbl.Text = "Select a valid category";
                 return false;
+            }else if (InputValidation.IsDuplicate(location) == true)
+            {
+                MessageBox.Show("Issue already has this location");
+                return false;
             }
             else
             {

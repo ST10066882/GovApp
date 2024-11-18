@@ -16,11 +16,12 @@ namespace GovApp
         private string type;
         private string description;
         private byte[] mediaPath;
-
+        private string status;
         public string Location { get => location; set => location = value; }
         public string Type { get => type; set => type = value; }
         public string Description { get => description; set => description = value; }
         public byte[] MediaPath { get => mediaPath; set => mediaPath = value; }
+        public string Status { get => status; set => status = value; }
 
         //---------------------------------------------------------------------------//
 
@@ -38,6 +39,7 @@ namespace GovApp
             this.type = type;
             this.description = description;
             this.mediaPath = mediaPath;
+            this.status = "Pending";
         }
         //---------------------------------------------------------------------------//
         //Method displaying content of object

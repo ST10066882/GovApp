@@ -22,17 +22,16 @@ namespace GovApp.UserControls
         AvlTree myTree = new AvlTree();
 
         //list used to store the names of the requests
-        List<String> requestNames = new List<String>();
-
+        List<string> locations= new List<string>();
         //Constructor for user control (Builder)
         public ServiceLocator()
         {
             InitializeComponent();
             PopulateTree();
             PopulateListBox(myTree.Root);
-            Graph myGraph = new Graph();
+            //Graph myGraph = new Graph();
             //Start creating the graph from the root of my AVL tree
-            CreateGraphFromTree(myTree.Root, myGraph);
+            //CreateGraphFromTree(myTree.Root, myGraph);
            
         }
 
@@ -50,21 +49,22 @@ namespace GovApp.UserControls
             {
                 RequestArea.Visible = true;
             }
-            ClearLabels();
+            //ClearLabels();
             if (ServiceStorage.SelectedItem == null)
             {
-                MessageBox.Show("Not valid request" + requestNames.Count);
+                MessageBox.Show("Not valid request" + locations.Count);
                 return;
             }
             string selectedRequest = ServiceStorage.SelectedItem.ToString();
 
-            ServiceRequest targetRequest = myTree.Search(selectedRequest);
+            Issue targetRequest = myTree.Search(selectedRequest);
             if (targetRequest != null)
             {
-                RequestNameLbl.Text = targetRequest.RequestName;
-                TypeData.Text = targetRequest.RequestType;
-                StatusData.Text = targetRequest.RequestStatus;
-                DateData.Text = targetRequest.RequestDate;
+                RequestNameLbl.Text = targetRequest.Location;
+                TypeData.Text = targetRequest.Type;
+                StatusData.Text = targetRequest.Status;
+                DateData.Text = targetRequest.Description;
+                pictureBox1.Image = CheckDoc(targetRequest.MediaPath);
             }
             else
             {
@@ -73,29 +73,53 @@ namespace GovApp.UserControls
 
         }
 
+        public Image CheckDoc(byte[] picture)
+        {
+            try
+            {
+                Image theImage = Image.FromStream(new System.IO.MemoryStream(picture));
+                return theImage;
+            }
+            catch (Exception ex)
+            {
+               MessageBox.Show("Document found but wont be displayed only pictures");
+                return null;
+            }
+        }
+
         //---------------------------------------------------------------------------//
         // Create and Populate Binary Search Tree
         private void PopulateTree()
         {
-            List<ServiceRequest> requests = new List<ServiceRequest>
+            var issueManager = IssueManager.GetInstance();
+            for(int i = 0; i < issueManager.Issues.Count; i++)
             {
-                new ServiceRequest(1, "Maintenance", "Fix Water Leak", "Pending", "01/11/2024"),
-                new ServiceRequest(2, "IT Support", "Update Drivers", "Completed", "05/11/2024"),
-                new ServiceRequest(3, "Finance", "Budget Approval", "In Progress", "06/11/2024"),
-                new ServiceRequest(4, "Legal", "Review Contract", "Pending", "07/11/2024"),
-                new ServiceRequest(5, "Human Resources", "Employee Review", "Completed", "08/11/2024"),
-                new ServiceRequest(6, "Maintenance", "Fix Broken Window", "In Progress", "09/11/2024"),
-                new ServiceRequest(7, "IT Support", "Install Software", "Completed", "10/11/2024"),
-                new ServiceRequest(8, "Finance", "Tax Return", "Pending", "11/11/2024"),
-                new ServiceRequest(9, "Legal", "Client Negotiations", "In Progress", "12/11/2024"),
-                new ServiceRequest(10, "Human Resources", "Hiring Process", "Completed", "13/11/2024")
-            };
+                myTree.Insert(issueManager.Issues[i]);
+            }
 
-           for (int i = 0; i < requests.Count; i++)
-           {
-                myTree.Insert(requests[i]);
-           }
-            
+            if (myTree.Root == null)
+            {
+                MessageBox.Show("Please create issues to use page");
+            }
+            // List<ServiceRequest> requests = new List<ServiceRequest>
+            // {
+            //     new ServiceRequest(1, "Maintenance", "Fix Water Leak", "Pending", "01/11/2024"),
+            //     new ServiceRequest(2, "IT Support", "Update Drivers", "Completed", "05/11/2024"),
+            //     new ServiceRequest(3, "Finance", "Budget Approval", "In Progress", "06/11/2024"),
+            //     new ServiceRequest(4, "Legal", "Review Contract", "Pending", "07/11/2024"),
+            //     new ServiceRequest(5, "Human Resources", "Employee Review", "Completed", "08/11/2024"),
+            //     new ServiceRequest(6, "Maintenance", "Fix Broken Window", "In Progress", "09/11/2024"),
+            //     new ServiceRequest(7, "IT Support", "Install Software", "Completed", "10/11/2024"),
+            //     new ServiceRequest(8, "Finance", "Tax Return", "Pending", "11/11/2024"),
+            //     new ServiceRequest(9, "Legal", "Client Negotiations", "In Progress", "12/11/2024"),
+            //     new ServiceRequest(10, "Human Resources", "Hiring Process", "Completed", "13/11/2024")
+            // };
+
+            //for (int i = 0; i < requests.Count; i++)
+            //{
+            //     myTree.Insert(requests[i]);
+            //}
+
         }
 
         //---------------------------------------------------------------------------//
@@ -109,14 +133,14 @@ namespace GovApp.UserControls
             {
                 // If there's a left child, create an relationship between node
                 // and left
-                graph.CreateRelationship(node.Data, node.Left.Data);
+                //graph.CreateRelationship(node.Data, node.Left.Data);
                 CreateGraphFromTree(node.Left, graph);
             }
             else if(node.Right != null)
             {
                 // If there's a right child, create an relationship between node
                 // and right
-                graph.CreateRelationship(node.Data, node.Right.Data);
+               // graph.CreateRelationship(node.Data, node.Right.Data);
                 CreateGraphFromTree(node.Right, graph);
             }
         }
@@ -126,13 +150,16 @@ namespace GovApp.UserControls
         private void PopulateListBox(Node node)
         {
             //Traverse the tree from the root
+           // locations =  myTree.GetAllLocationsAsHashSet();
+            //MessageBox.Show(locations.Count.ToString());
             GatherRequestsFromTree(myTree.Root);
 
             //Add the names to the list box
-            for (int i = 0; i < requestNames.Count; i++)
+            for (int i = 0; i < locations.Count; i++)
             {
-                ServiceStorage.Items.Add(requestNames[i]);
+                ServiceStorage.Items.Add(locations[i]);
             }
+            //MessageBox.Show(ServiceStorage.Items.Count());
         }
 
         //---------------------------------------------------------------------------//
@@ -148,8 +175,9 @@ namespace GovApp.UserControls
             //If there is a left child, go left
             GatherRequestsFromTree(node.Left);
 
+            
             //Add the name of the request to the list
-            requestNames.Add(node.Data.RequestName);
+            locations.Add(node.Data.Location);
 
             //If there is a right child, go right
             GatherRequestsFromTree(node.Right);
@@ -165,6 +193,15 @@ namespace GovApp.UserControls
             DateData.Text = "";
         }
 
+        private void tableLayoutPanel1_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
+
+        private void RequestArea_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
     }//--------------------------End Of Class-------------------------------------------------//
 
 }//------------------------------End of Namespace---------------------------------------------//

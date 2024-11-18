@@ -42,6 +42,20 @@ namespace GovApp
             return true;
         }
 
+        public static bool IsDuplicate(string value)
+        {
+             var issueManager = IssueManager.GetInstance();
+
+            for(int i =0; i < issueManager.Issues.Count; i++)
+            {
+                if (issueManager.Issues[i].Location == value)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
     }//--------------------------End Of Class-------------------------------------------------//
 
 }//------------------------------End of Namespace---------------------------------------------//

@@ -24,12 +24,12 @@ namespace GovApp.Classes
     /// </summary>
     public class Node
     {
-        public ServiceRequest Data { get; set; }
+       public Issue Data { get; set; }
         public Node Left { get; set; }
         public Node Right { get; set; }
         public int Height { get; set; }
 
-        public Node(ServiceRequest theData)
+        public Node(Issue theData)
         {
             Data = theData;
             Height = 1;
